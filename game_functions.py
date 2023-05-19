@@ -24,6 +24,15 @@ def get_first_valid_row(board, col):
             return row
 
 
+# returns list of columns that can be dropped into
+def get_all_valid_columns(board):
+    valid_location = []
+    for col in range(COLUMNS):
+        if is_valid_column(board, col):
+            valid_location.append(col)
+    return valid_location
+
+
 def game_end(board, piece):
     # Check if there are any horizontal winning positions
     for col in range(COLUMNS - 3):  # No need to check last 3 columns
