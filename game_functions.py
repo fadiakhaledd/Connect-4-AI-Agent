@@ -62,3 +62,74 @@ def game_end(board, piece):
                     board[row - 2][col + 2] == piece and
                     board[row - 3][col + 3] == piece):
                 return True
+
+
+def score_mechanism(window, piece):
+    score = 0
+
+    # Determine the piece of the opponent
+    opponent = OPP_PIECE
+    if piece == OPP_PIECE:
+        opponent = AGENT_PIECE
+
+    # Count the number of occurrences of the current player's piece and empty spaces
+    piece_count = window.count(piece)  # count occurrence
+    empty_count = window.count(0)
+
+    # Assign scores based on the number of occurrences of the current player's piece and empty spaces
+    if piece_count == 4:
+        score += 1000  # highest score we can get
+    elif (piece_count == 3) and empty_count == 1:
+        score += 10
+    elif (piece_count == 2) and empty_count == 2:
+        score += 5
+
+    # Check for the opponent's pieces and assign a negative score if they have three in a row with an empty space
+    opp_count = window.count(opponent)
+    if opp_count == 3 and empty_count == 1:
+        score -= 70
+
+    return score
+
+
+# assign the score to a board
+def calculate_score(board, piece):
+    score = 0  # initial score is zero
+
+    # score center column
+    center_array = [int(row[COLUMNS // 2])
+                    for row in board]  # get the center column
+    center_count = center_array.count(piece)
+    score += center_count * 6
+
+    # Score for horizontal sequences of pieces
+    for row in range(ROWS):
+        row_array = [int(i) for i in board[row]]
+        for col in range(COLUMNS - 3):
+            # Get a window of 4 pieces in the row
+            window = row_array[col:col + WIN_LENGTH]
+            score += score_mechanism(window, piece)
+
+    # Score for vertical sequences of pieces
+    for col in range(COLUMNS):
+        col_array = [int(i) for i in [board[r][col] for r in range(ROWS)]]
+        for row in range(ROWS - 3):
+            # Get a window of 4 pieces in the column
+            window = col_array[row:row + WIN_LENGTH]
+            score += score_mechanism(window, piece)
+
+    # Score for diagonal sequences of pieces (from bottom to top)
+    for row in range(ROWS - 3):
+        for col in range(COLUMNS - 3):
+            # Get a diagonal window of 4 pieces
+            window = [board[row + i][col + i] for i in range(WIN_LENGTH)]
+            score += score_mechanism(window, piece)
+
+    # Score for diagonal sequences of pieces (from top to bottom)
+    for row in range(3, ROWS):
+        for col in range(COLUMNS - 3):
+            # Get a diagonal window of 4 pieces
+            window = [board[row - i][col + i] for i in range(WIN_LENGTH)]
+            score += score_mechanism(window, piece)
+
+    return score
