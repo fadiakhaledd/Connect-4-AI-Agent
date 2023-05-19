@@ -43,7 +43,8 @@ class Board:
         return grid
 
     def _get_grid_cordinates(self):
-        startCord = (53, 51)
+        startCord = (int(config['connect4']['startCordX']),
+                     int(config['connect4']['startCordY']))
         cordArr = []
         for i in range(0, 7):
             for j in range(0, 6):
